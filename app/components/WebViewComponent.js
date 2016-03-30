@@ -14,11 +14,11 @@ var {
   WebView,
   Animated,
   Easing,
+  WebView
 } = React;
 
 var NavigationBar = require('./NavigationBar');
 var LoadingPage = require('./LoadingPage');
-var WebViewAndroid = require('react-native-webview-android');
 
 class WebViewComponent extends Component{
   constructor(props) {
@@ -33,12 +33,10 @@ class WebViewComponent extends Component{
         <View style={{paddingTop:0}}>
           <NavigationBar navigator={this.props.navigator} index={false} />
         </View>
-        <WebViewAndroid
-          url={this.props.url}
+        <WebView
+          source={{uri: 'http://www.posttestserver.com/post.php', method: 'GET'}}
           javaScriptEnabled={true}
-          geolocationEnabled={false}
-          builtInZoomControls={false}
-          style={{flex:1}}
+          style={{flex: 1}}
         />
       </View>
     );

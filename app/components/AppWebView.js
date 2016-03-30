@@ -19,7 +19,6 @@ var {
 
 var NavigationBar = require('./NavigationBar');
 var LoadingPage = require('./LoadingPage');
-var WebViewAndroid = require('react-native-webview-android');
 
 var PIXELRATIO = PixelRatio.get();
 var HEADER_SIZE = 200;
@@ -28,25 +27,23 @@ class AppWebView extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      webViewData:{},
-      webViewBody:null,
-      scrollValue:new Animated.Value(0),
+      webViewData: {},
+      webViewBody: null,
+      scrollValue: new Animated.Value(0)
     }
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.fetchStory();
   }
 
   render() {
     var story = this.state.webViewData;
     return (
-      <View style={{flex:1,flexDirection:'column'}}>
-        <WebViewAndroid
-          html={this.state.webViewBody}
+      <View style={{ flex: 1, flexDirection: 'column' }}>
+        <WebView
+          source={{ html: this.state.webViewBody }}
           javaScriptEnabled={true}
-          geolocationEnabled={false}
-          builtInZoomControls={false}
           style={{flex:1,marginTop:-160}} />
         <View style={{position:'absolute',left:0,top:0,}}>
           <NavigationBar navigator={this.props.navigator} index={false} />
