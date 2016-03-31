@@ -6,10 +6,10 @@ import React, {
 } from 'react-native';
 import StatusBarAndroid from 'react-native-android-statusbar';
 
-import ZhiHuDailyCover from './app/components/ZhiHuDailyCover';
-import ZhiHuDailyIndex from './app/components/ZhiHuDailyIndex';
-import AppWebView from './app/components/AppWebView';
-import WebViewComponent from './app/components/WebViewComponent';
+import LuanchScreen from './app/screens/LuanchScreen';
+import HomeScreen from './app/screens/HomeScreen';
+import StoryScreen from './app/screens/StoryScreen';
+import WebViewScreen from './app/screens/WebViewScreen';
 
 const { width } = Dimensions.get('window');
 
@@ -31,16 +31,16 @@ const CustomSceneConfig = Object.assign({}, BaseConfig, {
 class APP extends Component {
   AppScene(route, navigator) {
     switch (route.id) {
-    case 'ZhiHuDailyCover':
-      return <ZhiHuDailyCover navigator={navigator} />
-    case 'ZhiHuDailyIndex':
-      return <ZhiHuDailyIndex navigator={navigator} />
-    case 'AppWebView':
-      return <AppWebView navigator={navigator} data={route.data} />
-    case 'WebViewComponent':
-      return <WebViewComponent navigator={navigator} url={route.url} />
+    case 'LuanchScreen':
+      return <LuanchScreen navigator={navigator} />
+    case 'HomeScreen':
+      return <HomeScreen navigator={navigator} />
+    case 'StoryScreen':
+      return <StoryScreen navigator={navigator} data={route.data} />
+    case 'WebViewScreen':
+      return <WebViewScreen navigator={navigator} url={route.url} />
     default:
-      return <ZhiHuDailyCover navigator={navigator} />
+      return <LuanchScreen navigator={navigator} />
     }
   }
 
@@ -51,8 +51,8 @@ class APP extends Component {
   render() {
     return (
       <Navigator
-          initialRoute={{ id: 'ZhiHuDailyCover' }}
-          renderScene={this.AppScene.bind(this)}
+          initialRoute={{id: 'LuanchScreen'}}
+          renderScene={this.AppScene}
           configureScene={(route) => this._configureScene(route)} />
     );
   }
