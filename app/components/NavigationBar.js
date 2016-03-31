@@ -92,7 +92,7 @@ class NavigationBar extends Component {
           />
           <TouchableOpacity
             onPress={() => {
-              navigator.push({id:'WebViewComponent',url:API_BINGSEARCH+this.state.searchString});
+              navigator.push({id:'WebViewScreen',url:API_BINGSEARCH+this.state.searchString});
               dismissKeyboard();
               this.clearText();
               this.closeSearch();

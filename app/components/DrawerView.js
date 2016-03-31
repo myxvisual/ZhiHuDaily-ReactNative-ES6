@@ -28,7 +28,7 @@ class DrawerView extends Component {
   render() {
     return (
       <View style={{backgroundColor:'#FAFAFA',height:680,}}>
-        <Image style={{width:307,height:180,flexDirection:'column',justifyContent:'space-between',}} source={require('../../src/images/Material-225.jpg')} >
+        <Image style={{width:307,height:180,flexDirection:'column',justifyContent:'space-between',}} source={require('../images/Material-225.jpg')} >
           <View style={{backgroundColor:'#fff',height:80,width:80,borderRadius:80,marginTop:20,marginLeft:12,}}></View>
           <View style={{flexDirection:'row',justifyContent:'space-between',}}>
             <Text style={{marginLeft:20,color:'#fff',fontSize:14,fontWeight:'bold',}}>请登录</Text>

@@ -12,13 +12,7 @@ var {
   TouchableOpacity,
 } = React;
 
-class LoadingPage extends Component{
-  gotoMainPage(){
-    this.props.navigator.push({
-      id:'MainPage',
-    });
-  }
-
+class LoadingPage extends Component {
   render() {
     return (
       <View style={styles.Container}>
@@ -64,7 +58,7 @@ var styles = StyleSheet.create({
     fontWeight:'bold',
     justifyContent:'center',
     alignItems:'center',
-  },
+  }
 });
 
 module.exports = LoadingPage;
