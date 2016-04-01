@@ -62,7 +62,7 @@ class SplashPage extends Component{
     let navigator = this.props.navigator;
     setTimeout(
       () => {navigator.push({
-        id:'ZhiHuDailyCover',name:'ZhiHuDailyCover'
+        id:'LuanchScreen',name:'LuanchScreen'
       });
     },2000)
   }
