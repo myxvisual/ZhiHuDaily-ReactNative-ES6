@@ -17,6 +17,7 @@
     "semi": 0,
     "comma-dangle": [1, "never"],
     "no-else-return": 0,
+    "object-shorthand": ["error", "never"],
     "no-unused-vars": 1
   }
 }
