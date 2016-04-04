@@ -7,7 +7,7 @@
     "init": "node -e 'require('react-native/local-cli/cli').init('.','RNZhiHuDaily')'"
   },
   "dependencies": {
-    "react": "^0.14.7",
+    "react": "^0.14.8",
     "react-native": "^0.22.2",
     "react-native-android-statusbar": "^0.1.2"
   },
