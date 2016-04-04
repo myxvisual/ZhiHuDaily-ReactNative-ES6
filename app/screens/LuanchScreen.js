@@ -23,7 +23,7 @@ export default class LuanchScreen extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.fetchCover();
     Animated.timing(
       this.state.animatedCover,

@@ -1,36 +1,32 @@
-'use strict';
-
-var React = require('react-native');
-
-var {
+import React, {
   Component,
-  Navigator,
   StyleSheet,
   View,
   Text,
   TextInput,
-  Image,
   Animated,
   Easing,
   TouchableOpacity,
-} = React;
+  Dimensions
+} from 'react-native';
 
-var ButtonMargin = {marginLeft:12,};
-var API_BINGSEARCH = 'https://www.baidu.com/s?wd=site%3Adaily.zhihu.com%20';
-var dismissKeyboard = require('dismissKeyboard');
+const width = Dimensions.get('window');
+const ButtonMargin = {marginLeft: 12};
+const API_BINGSEARCH = 'https://www.baidu.com/s?wd=site%3Adaily.zhihu.com%20';
+const dismissKeyboard = require('dismissKeyboard');
 
-class NavigationBar extends Component {
+export default class NavigationBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchString:null,
-      AnimatedSearchBar: new Animated.Value(0),
+      searchString: null,
+      AnimatedSearchBar: new Animated.Value(0)
     }
   }
 
   render() {
-    var navigator = this.props.navigator;
-    var leftButton = this.props.index ?
+    const navigator = this.props.navigator;
+    const leftButton = this.props.index ?
       (<TouchableOpacity
         style={ButtonMargin}
         onPress={() => this.props.openMyDrawer(null)}>
@@ -45,7 +41,7 @@ class NavigationBar extends Component {
           keyboard_arrow_left
         </Text>
       </TouchableOpacity>);
-    var marginLeftinterpolate = this.state.AnimatedSearchBar.interpolate({
+    const marginLeftinterpolate = this.state.AnimatedSearchBar.interpolate({
       inputRange:[0,1],
       outputRange:[0,-350]
     });
@@ -136,9 +132,9 @@ class NavigationBar extends Component {
 
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   Container:{
-    width:360,
+    width: width * 2,
     paddingLeft:0,
     height:50,
     flexDirection:'row',
@@ -161,5 +157,3 @@ var styles = StyleSheet.create({
     textAlign:'center',
   },
 });
-
-module.exports = NavigationBar;

@@ -6,18 +6,17 @@ import React, {
   Image,
   DrawerLayoutAndroid,
   TouchableOpacity,
-  ListView
+  ListView,
+  Dimensions,
+  PixelRatio
 } from 'react-native';
-
+const { width } = Dimensions.get('window');
 import ViewPager from '../components/ViewPager/ViewPager';
 import NavigationBar from '../components/NavigationBar';
 import LoadingPage from '../components/LoadingPage';
 import DrawerView from '../components/DrawerView';
-
-const nowDate = new Date();
-const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
-const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDate.getDate()}`;
-const storyCache = { stories: [], page: fullDate };
+const getDate = new Date();
+const storyCache = { stories: [], storyDate: Date.parse(getDate) };
 
 export default class HomeScreen extends Component {
   constructor(props) {
@@ -60,20 +59,17 @@ export default class HomeScreen extends Component {
             id: 'StoryScreen',
             data: story
           })}>
-        <Image
-          style={styles.ListCard}
-          source={require('../images/ZhihuDailyCard.png')}>
+        <View
+          style={styles.ListCard}>
           <Image style={styles.ListImage} source={{uri: story.images[0]}} />
-          <View style={{width: 240, paddingLeft: 10}}>
-            <Text style={styles.ListTitle}>{story.title}</Text>
-          </View>
-        </Image>
+          <Text style={styles.ListTitle}>{story.title}</Text>
+        </View>
       </TouchableOpacity>
     )
   }
 
   renderSectionHeader() {
-    const dateHeader = 12;
+    const dateHeader = null;
     return (
       <View>
         <Text>
@@ -84,8 +80,12 @@ export default class HomeScreen extends Component {
   }
 
   onEndReached() {
+    storyCache.storyDate -= 86400000;
+    const nowDate = new Date(storyCache.storyDate);
+    const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
+    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDate.getDate()}`;
     storyCache.page -= 1;
-    fetch(`http://news.at.zhihu.com/api/4/news/before/${storyCache.page}`)
+    fetch(`http://news.at.zhihu.com/api/4/news/before/${fullDate}`)
     .then((response) => response.json())
     .then((responseData) => {
       for (let story in responseData.stories) {
@@ -100,7 +100,7 @@ export default class HomeScreen extends Component {
 
   renderTopstories(topStories) {
     return (
-      <View style={{}}>
+      <View style={{width: width}}>
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={() =>
@@ -129,7 +129,7 @@ export default class HomeScreen extends Component {
     return (
       <ViewPager
         dataSource={this.state.topStories}
-        style={{height: 300}}
+        style={{width: width}}
         renderPage={this.renderTopstories.bind(this)}
         isLoop
         autoPlay />
@@ -190,12 +190,12 @@ const styles = StyleSheet.create({
   TopstoriesImage: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    height: 200,
-    width: 360
+    height: 2 / 3 * width,
+    width: width
   },
   TopstoriesFG: {
-    height: 140,
-    width: 360,
+    height: 140 / 360 * width,
+    width: width,
     alignItems: 'center',
     justifyContent: 'flex-end'
   },
@@ -203,9 +203,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     letterSpacing: 12,
     lineHeight: 30,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '300',
-    width: 320,
+    width: width - 24,
     marginBottom: 12
   },
   ListView: {
@@ -213,14 +213,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA'
   },
   ListCard: {
-    width: 360,
+    width: width,
     height: 82,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginLeft: 0,
-    marginRight: 0,
-    margin: 4
+    backgroundColor: '#ffffff',
+    margin: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#fbfbfb'
   },
   ListImage: {
     marginLeft: 5,
@@ -233,7 +235,8 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontWeight: '200',
     letterSpacing: 12,
-    lineHeight: 24
+    lineHeight: 24,
+    margin: 10
   },
   ListText: {
     fontSize: 14,
