@@ -11,14 +11,14 @@ import HomeScreen from './app/screens/HomeScreen';
 import StoryScreen from './app/screens/StoryScreen';
 import WebViewScreen from './app/screens/WebViewScreen';
 
-const { width } = Dimensions.get('window');
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 StatusBarAndroid.showStatusBar();
 StatusBarAndroid.setHexColor('#000000');
 const BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 const CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
   snapVelocity: 8,
-  edgeHitWidth: width
+  edgeHitWidth: SCREEN_WIDTH
 });
 const CustomSceneConfig = Object.assign({}, BaseConfig, {
   springTension: 180,

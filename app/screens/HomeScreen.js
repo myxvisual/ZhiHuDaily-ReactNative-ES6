@@ -1,5 +1,6 @@
 import React, {
   Component,
+  PropTypes,
   StyleSheet,
   View,
   Text,
@@ -7,14 +8,16 @@ import React, {
   DrawerLayoutAndroid,
   TouchableOpacity,
   ListView,
-  Dimensions,
-  PixelRatio
+  Dimensions
 } from 'react-native';
-const { width } = Dimensions.get('window');
 import ViewPager from '../components/ViewPager/ViewPager';
 import NavigationBar from '../components/NavigationBar';
 import LoadingPage from '../components/LoadingPage';
 import DrawerView from '../components/DrawerView';
+import getStyles from '../styles/screens/HomeScreen';
+
+let SCREEN_WIDTH = Dimensions.get('window').width;
+let styles = getStyles(SCREEN_WIDTH);
 const getDate = new Date();
 const storyCache = { stories: [], storyDate: Date.parse(getDate) };
 
@@ -58,7 +61,7 @@ export default class HomeScreen extends Component {
           this.props.navigator.push({
             id: 'StoryScreen',
             data: story
-          })}>
+          })} >
         <View
           style={styles.ListCard}>
           <Image style={styles.ListImage} source={{uri: story.images[0]}} />
@@ -83,8 +86,8 @@ export default class HomeScreen extends Component {
     storyCache.storyDate -= 86400000;
     const nowDate = new Date(storyCache.storyDate);
     const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
-    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDate.getDate()}`;
-    storyCache.page -= 1;
+    const nowDay = nowDate.getDate() < 10 ? `0${nowDate.getDate()}` : nowDate.getDate();
+    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDay}`;
     fetch(`http://news.at.zhihu.com/api/4/news/before/${fullDate}`)
     .then((response) => response.json())
     .then((responseData) => {
@@ -100,7 +103,7 @@ export default class HomeScreen extends Component {
 
   renderTopstories(topStories) {
     return (
-      <View style={{width: width}}>
+      <View style={{width: SCREEN_WIDTH}}>
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={() =>
@@ -110,9 +113,10 @@ export default class HomeScreen extends Component {
           })} >
         <Image
           style={styles.TopstoriesImage}
-          source={{uri:topStories.image}} >
-          <Image style={styles.TopstoriesFG} source={require('../images/ZhiHuDailyMainPosterFG.png')}>
-            <Text style={styles.TopstoriesTitle}>
+          source={{uri: topStories.image}} >
+          <Image style={styles.TopstoriesFG}
+                 source={require('../images/ZhiHuDailyMainPosterFG.png')}>
+            <Text style={styles.TopstoriesTitle} >
               {topStories.title}
             </Text>
             <Text>
@@ -129,7 +133,7 @@ export default class HomeScreen extends Component {
     return (
       <ViewPager
         dataSource={this.state.topStories}
-        style={{width: width}}
+        style={{width: SCREEN_WIDTH}}
         renderPage={this.renderTopstories.bind(this)}
         isLoop
         autoPlay />
@@ -147,7 +151,6 @@ export default class HomeScreen extends Component {
       )
     }
 
-    const topStories = this.state.topStories;
     const navigationView = (
       <DrawerView />
     );
@@ -157,11 +160,16 @@ export default class HomeScreen extends Component {
         renderNavigationView={() => navigationView}
         drawerWidth={307}
         drawerPosition={DrawerLayoutAndroid.positions.left}>
-        <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#FAFAFA'}}>
+        <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#FAFAFA'}}
+              onLayout={(event) => {
+                SCREEN_WIDTH = event.nativeEvent.layout.width;
+                styles = getStyles(SCREEN_WIDTH);
+              }}>
           <View style={{paddingTop: 0}}>
-            <NavigationBar navigator={this.props.navigator}
-                           index
-                           openMyDrawer={() => this.openMyDrawer()} />
+            <NavigationBar
+              navigator={this.props.navigator}
+              index
+              openMyDrawer={() => this.openMyDrawer()} />
           </View>
             <ListView
               style={styles.ListView}
@@ -177,72 +185,6 @@ export default class HomeScreen extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  NavigationBar: {
-    height: 36,
-    backgroundColor: '#0a8ffc',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: 20,
-    paddingRight: 20
-  },
-  TopstoriesImage: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    height: 2 / 3 * width,
-    width: width
-  },
-  TopstoriesFG: {
-    height: 140 / 360 * width,
-    width: width,
-    alignItems: 'center',
-    justifyContent: 'flex-end'
-  },
-  TopstoriesTitle: {
-    color: '#fff',
-    letterSpacing: 12,
-    lineHeight: 30,
-    fontSize: 24,
-    fontWeight: '300',
-    width: width - 24,
-    marginBottom: 12
-  },
-  ListView: {
-    marginTop: 0,
-    backgroundColor: '#FAFAFA'
-  },
-  ListCard: {
-    width: width,
-    height: 82,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    margin: 4,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#fbfbfb'
-  },
-  ListImage: {
-    marginLeft: 5,
-    width: 76,
-    height: 76
-  },
-  ListTitle: {
-    fontSize: 14,
-    color: '#a7a7a7',
-    textAlign: 'left',
-    fontWeight: '200',
-    letterSpacing: 12,
-    lineHeight: 24,
-    margin: 10
-  },
-  ListText: {
-    fontSize: 14,
-    color: '#75cd37',
-    textAlign: 'left',
-    justifyContent: 'center',
-    alignItems: 'flex-start'
-  }
-});
+HomeScreen.propTypes = {
+  navigator: PropTypes.object.isRequired
+}

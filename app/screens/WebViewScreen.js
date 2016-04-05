@@ -17,7 +17,7 @@ var {
   WebView
 } = React;
 
-var NavigationBar = require('../components/NavigationBar');
+import NavigationBar from '../components/NavigationBar';
 var LoadingPage = require('../components/LoadingPage');
 
 class WebViewScreen extends Component{
@@ -36,15 +36,10 @@ class WebViewScreen extends Component{
         <WebView
           source={{uri: this.props.url, method: 'GET'}}
           javaScriptEnabled={true}
-          style={{flex: 1}}
-        />
+          style={{flex: 1}} />
       </View>
     );
   }
-
 }
-var styles = StyleSheet.create({
-
-});
 
 module.exports = WebViewScreen;

@@ -25,22 +25,6 @@ export default class LuanchScreen extends Component {
 
   componentDidMount() {
     this.fetchCover();
-    Animated.timing(
-      this.state.animatedCover,
-      {
-        toValue: 1,
-        duration: 3000,
-        easing: Easing.sin,
-        delay: 0
-      }
-    ).start();
-
-    setTimeout(
-      () => {
-        this.props.navigator.replace({
-          id: 'HomeScreen'
-        })
-      }, 3000)
   }
 
   fetchCover() {
@@ -50,9 +34,25 @@ export default class LuanchScreen extends Component {
         this.setState({
           CoverImage: responseData.img,
           CoverText: responseData.text
-        })
+        });
+        Animated.timing(
+          this.state.animatedCover,
+          {
+            toValue: 1,
+            duration: 3000,
+            easing: Easing.sin,
+            delay: 0
+          }
+        ).start();
+
+        setTimeout(
+        () => {
+          this.props.navigator.replace({
+            id: 'HomeScreen'
+          })
+        }, 3000)
       })
-      .done();
+    .done();
   }
 
   render() {

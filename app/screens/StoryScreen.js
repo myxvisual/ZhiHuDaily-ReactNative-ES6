@@ -1,34 +1,24 @@
-'use strict';
-
-var React = require('react-native');
-var Dimensions = require('Dimensions');
-var PixelRatio = require('PixelRatio');
-var {height,width} = Dimensions.get('window');
-
-var {
+import React, {
   Component,
   StyleSheet,
   View,
-  Text,
-  Image,
   WebView,
   Animated,
-  Easing,
-  ScrollView
-} = React;
+  PropTypes,
+  Dimensions
+} from 'react-native';
 
-var NavigationBar = require('../components/NavigationBar');
-var LoadingPage = require('../components/LoadingPage');
+import NavigationBar from '../components/NavigationBar';
+import LoadingPage from '../components/LoadingPage';
 
-var PIXELRATIO = PixelRatio.get();
-var HEADER_SIZE = 200;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
-class StoryScreen extends Component{
+export default class StoryScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       webViewData: {},
-      webViewBody: null,
+      loading: true,
       scrollValue: new Animated.Value(0)
     }
   }
@@ -37,45 +27,58 @@ class StoryScreen extends Component{
     this.fetchStory();
   }
 
+  fetchStory() {
+    fetch(`http://news-at.zhihu.com/api/4/news/${this.props.data.id}`)
+      .then((response) => response.json())
+      .then((responseData) => {
+        this.setState({
+          webViewData: responseData,
+          loading: false
+        })
+      })
+      .done();
+  }
+
   render() {
-    var story = this.state.webViewData;
+    if (this.state.loading) {
+      return (
+         <LoadingPage tittle="知乎" />
+      )
+    }
+    const story = this.state.webViewData;
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
+        <NavigationBar navigator={this.props.navigator} index={false} />
         <WebView
-          source={{ html: this.state.webViewBody }}
-          javaScriptEnabled={true}
-          style={{flex:1,marginTop:-160}} />
-        <View style={{position:'absolute',left:0,top:0,}}>
-          <NavigationBar navigator={this.props.navigator} index={false} />
-        </View>
-        {/*<Animated.View style={{position:'absolute',left:0,top:0,}}>
-          <Image
-            style={{height:200,width:360,}} source={{uri:story.image}} />
-          <Text>{story.title}</Text>
-        </Animated.View>*/}
+          source={{ html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <link rel="stylesheet" type="text/css" href="${story.css}">
+              </head>
+              <body>
+                <div style="
+                  background-image: url('${story.image}');
+                  background-size: cover;
+                  background-position: center;
+                  width: 100%;
+                  height: 400px;
+                  z-index: 999;
+                  position: relative">
+                </div>
+                <div style="margin-top:-200px">
+                  ${story.body}
+                </div>
+              </body>
+            </html>` }}
+          javaScriptEnabled
+          style={{flex: 1}} />
       </View>
     );
   }
-
-    fetchStory(){
-      fetch('http://news-at.zhihu.com/api/4/news/'+this.props.data.id)
-        .then((response) => response.json())
-        .then((responseData) => {
-          this.setState({
-            webViewData:responseData,
-            webViewBody:
-              '<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="'
-              +responseData.css
-              +'"></head><body>'
-              +responseData.body+'</body></html>',
-          })
-        })
-        .done();
-    }
 }
 
-var styles = StyleSheet.create({
-
-});
-
-module.exports = StoryScreen;
+StoryScreen.propTypes = {
+  navigator: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired
+}

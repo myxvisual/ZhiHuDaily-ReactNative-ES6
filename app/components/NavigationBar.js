@@ -1,5 +1,6 @@
 import React, {
   Component,
+  PropTypes,
   StyleSheet,
   View,
   Text,
@@ -10,10 +11,11 @@ import React, {
   Dimensions
 } from 'react-native';
 
-const width = Dimensions.get('window');
+import dismissKeyboard from 'dismissKeyboard';
+import styles from '../styles/components/NavigationBar';
+const SCREEN_WIDTH = Dimensions.get('window').width;
 const ButtonMargin = {marginLeft: 12};
 const API_BINGSEARCH = 'https://www.baidu.com/s?wd=site%3Adaily.zhihu.com%20';
-const dismissKeyboard = require('dismissKeyboard');
 
 export default class NavigationBar extends Component {
   constructor(props) {
@@ -22,6 +24,35 @@ export default class NavigationBar extends Component {
       searchString: null,
       AnimatedSearchBar: new Animated.Value(0)
     }
+  }
+
+  clearText() {
+    this._textInput.setNativeProps({text: ''});
+  }
+
+  openSearch() {
+    Animated.timing(
+      this.state.AnimatedSearchBar,
+      {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.bounce,
+        delay: 0
+      }
+    ).start();
+    this._textInput.focus()
+  }
+
+  closeSearch() {
+    Animated.timing(
+      this.state.AnimatedSearchBar,
+      {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.bounce,
+        delay: 0
+      }
+    ).start()
   }
 
   render() {
@@ -42,37 +73,44 @@ export default class NavigationBar extends Component {
         </Text>
       </TouchableOpacity>);
     const marginLeftinterpolate = this.state.AnimatedSearchBar.interpolate({
-      inputRange:[0,1],
-      outputRange:[0,-350]
+      inputRange: [0, 1],
+      outputRange: [0, -SCREEN_WIDTH]
     });
 
     return (
-      <View style={{height:50,flexDirection:'row',width:360,backgroundColor:'#00AAFF',alignItems:'center',}}>
-        <Animated.View style={[styles.Container,{marginLeft:marginLeftinterpolate,}]}>
+      <View style={{
+        height: 50, flexDirection: 'row',
+        width: SCREEN_WIDTH, backgroundColor: '#00AAFF', alignItems: 'center', flexWrap: 'nowrap'}}>
+        <Animated.View
+          style={[styles.Container, {marginLeft: marginLeftinterpolate}]}>
           {leftButton}
-          <TouchableOpacity
-            style={ButtonMargin}
-            onPress={() => this.openSearch()} >
-            <Text style={[styles.IconFont,{marginLeft:240}]}>
-              search
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={ButtonMargin} >
-            <Text style={styles.IconFont}>
-              more_vert
-            </Text>
-          </TouchableOpacity>
+          <View style={{flexDirection: 'row', flexWrap: 'nowrap'}}>
+            <TouchableOpacity
+              style={ButtonMargin}
+              onPress={() => this.openSearch()} >
+              <Text style={[styles.IconFont, {marginRight: 12}]}>
+                search
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={ButtonMargin} >
+              <Text style={styles.IconFont}>
+                more_vert
+              </Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
         <Animated.View
-          style={{width:340,height:36,backgroundColor:'#fff',borderRadius:2,flexDirection:'row',alignItems:'center',justifyContent:'space-around',}}
-          >
+          style={{width: SCREEN_WIDTH, height: 36, backgroundColor: '#fff', borderRadius: 2,
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+          <View style={{flexDirection: 'row', flexWrap: 'nowrap',
+          alignItems: 'center'}}>
           <TouchableOpacity
             onPress={() => {
               this.closeSearch();
               dismissKeyboard();
             }} >
-            <Text style={{color:'#BFBFBF',fontFamily:'MaterialIcons-Regular',fontSize:24,}}>
+            <Text style={{color: '#BFBFBF', fontFamily: 'MaterialIcons-Regular', fontSize: 24}}>
               close
             </Text>
           </TouchableOpacity>
@@ -84,16 +122,17 @@ export default class NavigationBar extends Component {
             underlineColorAndroid={'#fff'}
             value={this.state.searchString}
             onChangeText={(text) => this.setState({
-              searchString:text})}
-          />
+              searchString: text})} />
+          </View>
           <TouchableOpacity
             onPress={() => {
-              navigator.push({id:'WebViewScreen',url:API_BINGSEARCH+this.state.searchString});
+              navigator.push({
+                id: 'WebViewScreen', url: `${API_BINGSEARCH}${this.state.searchString}`});
               dismissKeyboard();
               this.clearText();
               this.closeSearch();
             }}>
-            <Text style={{color:'#BFBFBF',fontFamily:'MaterialIcons-Regular',fontSize:24,}}>
+            <Text style={{color: '#BFBFBF', fontFamily: 'MaterialIcons-Regular', fontSize: 24}}>
               search
             </Text>
           </TouchableOpacity>
@@ -101,59 +140,10 @@ export default class NavigationBar extends Component {
       </View>
     );
   }
-
-  clearText(){
-    this._textInput.setNativeProps({text:''});
-  }
-
-  openSearch(){
-    Animated.timing(
-      this.state.AnimatedSearchBar,
-      {
-        toValue:1,
-        duration:300,
-        easing:Easing.bounce,
-        delay:0,
-      }
-    ).start();
-  }
-
-  closeSearch(){
-    Animated.timing(
-      this.state.AnimatedSearchBar,
-      {
-        toValue:0,
-        duration:300,
-        easing:Easing.bounce,
-        delay:0,
-      }
-    ).start();
-  }
-
 }
 
-const styles = StyleSheet.create({
-  Container:{
-    width: width * 2,
-    paddingLeft:0,
-    height:50,
-    flexDirection:'row',
-    justifyContent:'flex-start',
-    alignItems:'center',
-  },
-  SearchBar:{
-    color:'#BFBFBF',
-    height:36,
-    width:260,
-    borderColor:'#BFBFBF',
-    borderWidth: 1,
-    fontSize:14,
-  },
-  IconFont:{
-    fontFamily:'MaterialIcons-Regular',
-    color: '#fff',
-    fontSize:24,
-    fontWeight:'200',
-    textAlign:'center',
-  },
-});
+NavigationBar.propTypes = {
+  navigator: PropTypes.object.isRequired,
+  index: PropTypes.bool.isRequired,
+  openMyDrawer: PropTypes.func
+}
