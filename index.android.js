@@ -36,7 +36,7 @@ class APP extends Component {
     case 'HomeScreen':
       return <HomeScreen navigator={navigator} />
     case 'StoryScreen':
-      return <StoryScreen navigator={navigator} data={route.data} />
+      return <StoryScreen navigator={navigator} url={route.url} />
     case 'WebViewScreen':
       return <WebViewScreen navigator={navigator} url={route.url} />
     default:

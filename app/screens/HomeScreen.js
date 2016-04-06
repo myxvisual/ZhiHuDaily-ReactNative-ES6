@@ -18,14 +18,17 @@ import getStyles from '../styles/screens/HomeScreen';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
 let styles = getStyles(SCREEN_WIDTH);
-const getDate = new Date();
-const storyCache = { stories: [], storyDate: Date.parse(getDate) };
+let listData = { dataBlob: {}, sectionsIDs: [], rowIDs: [] };
+let storyDate = Date.parse(new Date());
+const storyCache = { stories: [], storyDate: Date.parse(new Date()) };
 
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
       stories: new ListView.DataSource({
+        getSectionData: (dataBlob, sectionID) => dataBlob[sectionID],
+        getRowData: (dataBlob, sectionID, rowID) => dataBlob[rowID],
         rowHasChanged: (row1, row2) => row1 !== row2,
         sectionHeaderHasChanged: (s1, s2) => s1 !== s2
       }),
@@ -36,6 +39,27 @@ export default class HomeScreen extends Component {
     }
   }
 
+  coverYYMMDD(date) {
+    const nowDate = new Date(date);
+    const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
+    const nowDay = nowDate.getDate() < 10 ? `0${nowDate.getDate()}` : nowDate.getDate();
+    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDay}`;
+    return fullDate
+  }
+
+  addListData(originListData, sectionID, rowData) {
+    originListData.sectionsIDs.push(sectionID);
+    originListData.dataBlob[sectionID] = rowData;
+    originListData.rowIDs.push(
+      rowData.map((element, index) => {
+        const rowID = `${sectionID}:${index}`;
+        originListData.dataBlob[rowID] = element;
+        return rowID
+      })
+    )
+    return originListData
+  }
+
   componentDidMount() {
     this.fetchStories()
   }
@@ -44,58 +68,52 @@ export default class HomeScreen extends Component {
     fetch('http://news-at.zhihu.com/api/4/news/latest')
       .then((response) => response.json())
       .then((responseData) => {
+        this.addListData(listData, responseData.date, responseData.stories);
         this.setState({
-          stories: this.state.stories.cloneWithRows(responseData.stories),
           topStories: this.state.topStories.cloneWithPages(responseData.top_stories),
+          stories: this.state.stories.cloneWithRowsAndSections(listData.dataBlob, listData.sectionsIDs, listData.rowIDs),
           loading: false
         })
       })
       .done()
   }
 
-  renderStories(story) {
+  renderRow(rowData, sectionID, rowID) {
     return (
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() =>
           this.props.navigator.push({
             id: 'StoryScreen',
-            data: story
+            url: rowData.id
           })} >
         <View
           style={styles.ListCard}>
-          <Image style={styles.ListImage} source={{uri: story.images[0]}} />
-          <Text style={styles.ListTitle}>{story.title}</Text>
+          <Image style={styles.ListImage} source={{uri: rowData.images[0]}} />
+          <Text style={styles.ListTitle}>{rowData.title}</Text>
         </View>
       </TouchableOpacity>
     )
   }
 
-  renderSectionHeader() {
-    const dateHeader = null;
+  renderSectionHeader(sectionData, sectionID) {
     return (
       <View>
         <Text>
-          {dateHeader}
+          {sectionID}
         </Text>
       </View>
     )
   }
 
   onEndReached() {
-    storyCache.storyDate -= 86400000;
-    const nowDate = new Date(storyCache.storyDate);
-    const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
-    const nowDay = nowDate.getDate() < 10 ? `0${nowDate.getDate()}` : nowDate.getDate();
-    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDay}`;
-    fetch(`http://news.at.zhihu.com/api/4/news/before/${fullDate}`)
+    storyDate -= 86400000;
+    fetch(`http://news.at.zhihu.com/api/4/news/before/${this.coverYYMMDD(storyDate)}`)
     .then((response) => response.json())
     .then((responseData) => {
-      for (let story in responseData.stories) {
-        storyCache.stories.push(responseData.stories[story])
-      }
+      this.addListData(listData, responseData.date, responseData.stories);
       this.setState({
-        stories: this.state.stories.cloneWithRows(storyCache.stories)
+        stories: this.state.stories.cloneWithRowsAndSections(listData.dataBlob, listData.sectionsIDs, listData.rowIDs)
       })
     })
     .done();
@@ -109,7 +127,7 @@ export default class HomeScreen extends Component {
           onPress={() =>
           this.props.navigator.push({
             id: 'StoryScreen',
-            data: topStories
+            url: topStories.id
           })} >
         <Image
           style={styles.TopstoriesImage}
@@ -174,7 +192,7 @@ export default class HomeScreen extends Component {
             <ListView
               style={styles.ListView}
               dataSource={this.state.stories}
-              renderRow={this.renderStories.bind(this)}
+              renderRow={this.renderRow.bind(this)}
               renderHeader={this.renderHeader.bind(this)}
               renderSectionHeader={this.renderSectionHeader}
               onEndReachedThreshold={24}

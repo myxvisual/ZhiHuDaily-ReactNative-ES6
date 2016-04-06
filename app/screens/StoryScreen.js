@@ -28,7 +28,7 @@ export default class StoryScreen extends Component {
   }
 
   fetchStory() {
-    fetch(`http://news-at.zhihu.com/api/4/news/${this.props.data.id}`)
+    fetch(`http://news-at.zhihu.com/api/4/news/${this.props.url}`)
       .then((response) => response.json())
       .then((responseData) => {
         this.setState({
@@ -80,5 +80,5 @@ export default class StoryScreen extends Component {
 
 StoryScreen.propTypes = {
   navigator: PropTypes.object.isRequired,
-  data: PropTypes.object.isRequired
+  url: PropTypes.number.isRequired
 }
