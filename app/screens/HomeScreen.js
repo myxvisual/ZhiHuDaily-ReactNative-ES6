@@ -18,9 +18,8 @@ import getStyles from '../styles/screens/HomeScreen';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
 let styles = getStyles(SCREEN_WIDTH);
-let listData = { dataBlob: {}, sectionsIDs: [], rowIDs: [] };
+let listData;
 let storyDate = Date.parse(new Date());
-const storyCache = { stories: [], storyDate: Date.parse(new Date()) };
 
 export default class HomeScreen extends Component {
   constructor(props) {
@@ -48,6 +47,7 @@ export default class HomeScreen extends Component {
   }
 
   addListData(originListData, sectionID, rowData) {
+    originListData = originListData || {dataBlob: {}, sectionsIDs: [], rowIDs: []};
     originListData.sectionsIDs.push(sectionID);
     originListData.dataBlob[sectionID] = rowData;
     originListData.rowIDs.push(
@@ -68,7 +68,7 @@ export default class HomeScreen extends Component {
     fetch('http://news-at.zhihu.com/api/4/news/latest')
       .then((response) => response.json())
       .then((responseData) => {
-        this.addListData(listData, responseData.date, responseData.stories);
+        listData = this.addListData(null, responseData.date, responseData.stories);
         this.setState({
           topStories: this.state.topStories.cloneWithPages(responseData.top_stories),
           stories: this.state.stories.cloneWithRowsAndSections(listData.dataBlob, listData.sectionsIDs, listData.rowIDs),
@@ -98,8 +98,8 @@ export default class HomeScreen extends Component {
 
   renderSectionHeader(sectionData, sectionID) {
     return (
-      <View>
-        <Text>
+      <View style={styles.SectionHeaderBG}>
+        <Text style={styles.SectionHeaderTitle}>
           {sectionID}
         </Text>
       </View>

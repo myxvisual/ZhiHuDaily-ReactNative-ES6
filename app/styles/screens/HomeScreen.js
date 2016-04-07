@@ -69,6 +69,16 @@ function getStyles(WIDTH) {
       textAlign: 'left',
       justifyContent: 'center',
       alignItems: 'flex-start'
+    },
+    SectionHeaderBG: {
+      // backgroundColor: '#16bdf2',
+      // width: 60,
+      height: 20,
+      borderRadius: 2,
+      margin: 10
+    },
+    SectionHeaderTitle: {
+      color: '#6b6969'
     }
   });
   return styles
