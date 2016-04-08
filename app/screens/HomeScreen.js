@@ -17,6 +17,7 @@ import DrawerView from '../components/DrawerView';
 import getStyles from '../styles/screens/HomeScreen';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
+let DRAWER_REF = {};
 let styles = getStyles(SCREEN_WIDTH);
 let listData;
 let storyDate = Date.parse(new Date());
@@ -158,8 +159,8 @@ export default class HomeScreen extends Component {
     )
   }
 
-  openMyDrawer() {
-    this.refs.drawer.openDrawer();
+  navigationView() {
+    return <DrawerView drawer={DRAWER_REF} />
   }
 
   render() {
@@ -169,25 +170,24 @@ export default class HomeScreen extends Component {
       )
     }
 
-    const navigationView = (
-      <DrawerView />
-    );
     return (
       <DrawerLayoutAndroid
+        onLayout={() => {DRAWER_REF = this.refs.drawer}}
         ref="drawer"
-        renderNavigationView={() => navigationView}
-        drawerWidth={307}
+        renderNavigationView={() => this.navigationView()}
+        drawerWidth={SCREEN_WIDTH}
+        onDrawerOpen={() => {DRAWER_REF = this.refs.drawer}}
         drawerPosition={DrawerLayoutAndroid.positions.left}>
         <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#FAFAFA'}}
               onLayout={(event) => {
                 SCREEN_WIDTH = event.nativeEvent.layout.width;
-                styles = getStyles(SCREEN_WIDTH);
-              }}>
+                styles = getStyles(SCREEN_WIDTH)
+              }} >
           <View style={{paddingTop: 0}}>
             <NavigationBar
               navigator={this.props.navigator}
               index
-              openMyDrawer={() => this.openMyDrawer()} />
+              openMyDrawer={() => this.refs.drawer.openDrawer()} />
           </View>
             <ListView
               style={styles.ListView}

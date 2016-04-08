@@ -6,6 +6,14 @@ import {
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   Container: {
+    height: 50,
+    flexDirection: 'row',
+    width: SCREEN_WIDTH,
+    backgroundColor: '#00AAFF',
+    alignItems: 'center',
+    flexWrap: 'nowrap'
+  },
+  SearchBarClose: {
     width: SCREEN_WIDTH,
     paddingLeft: 0,
     height: 50,

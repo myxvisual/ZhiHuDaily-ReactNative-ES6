@@ -1,34 +1,30 @@
-'use strict';
-
-var React = require('react-native');
-var Dimensions = require('Dimensions');
-var PixelRatio = require('PixelRatio');
-var {Width,Height} = Dimensions.get('window');
-var StatusBarAndroid = require('react-native-android-statusbar');
-
-var {
-  Navigator,
+import React, {
   Component,
   StyleSheet,
   View,
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
-  ListView,
-} = React;
+  Dimensions
+} from 'react-native';
 
-var ThemeList = require('./ThemeList');
+import ThemeList from './ThemeList';
 
-class DrawerView extends Component {
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+export default class DrawerView extends Component {
   constructor(props) {
     super(props);
   }
 
+  componentDidMount() {
+  }
+
   render() {
     return (
-      <View style={{backgroundColor:'#FAFAFA',height:680,}}>
-        <Image style={{width:307,height:180,flexDirection:'column',justifyContent:'space-between',}} source={require('../images/Material-225.jpg')} >
+      <View style={{width: SCREEN_WIDTH * 0.7, backgroundColor:'#FAFAFA', height: SCREEN_HEIGHT}} onMouseDown >
+        <Image style={{width:SCREEN_WIDTH * 0.7,height:SCREEN_WIDTH * 0.3,flexDirection:'column',justifyContent:'space-between',}} source={require('../images/Material-225.jpg')} >
           <View style={{backgroundColor:'#fff',height:80,width:80,borderRadius:80,marginTop:20,marginLeft:12,}}></View>
           <View style={{flexDirection:'row',justifyContent:'space-between',}}>
             <Text style={{marginLeft:20,color:'#fff',fontSize:14,fontWeight:'bold',}}>请登录</Text>
@@ -36,7 +32,7 @@ class DrawerView extends Component {
           </View>
         </Image>
         <View style={{flexDirection:'column'}}>
-          <TouchableOpacity style={{flexDirection:'row',height:40,alignItems:'center',}}>
+          <TouchableOpacity style={{flexDirection:'row',height:40,alignItems:'center',}} >
             <Text style={{marginLeft:20,color:'#B3B3B3',fontSize:28,fontFamily:'MaterialIcons-Regular',}}>star</Text>
             <Text style={{marginLeft:20,color:'#B3B3B3',fontSize:14,}}>我的收藏</Text>
           </TouchableOpacity>
@@ -56,7 +52,4 @@ class DrawerView extends Component {
       </View>
     );
   }
-
 }
-
-module.exports = DrawerView;

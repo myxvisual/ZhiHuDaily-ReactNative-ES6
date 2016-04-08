@@ -78,11 +78,9 @@ export default class NavigationBar extends Component {
     });
 
     return (
-      <View style={{
-        height: 50, flexDirection: 'row',
-        width: SCREEN_WIDTH, backgroundColor: '#00AAFF', alignItems: 'center', flexWrap: 'nowrap'}}>
+      <View style={styles.Container}>
         <Animated.View
-          style={[styles.Container, {marginLeft: marginLeftinterpolate}]}>
+          style={[styles.SearchBarClose, {marginLeft: marginLeftinterpolate}]}>
           {leftButton}
           <View style={{flexDirection: 'row', flexWrap: 'nowrap'}}>
             <TouchableOpacity
@@ -115,7 +113,7 @@ export default class NavigationBar extends Component {
             </Text>
           </TouchableOpacity>
           <TextInput
-            ref={component => this._textInput = component}
+            ref={component => {this._textInput = component}}
             style={styles.SearchBar}
             placeholder={'搜索更多日报...'}
             placeholderTextColor ={'#BFBFBF'}
