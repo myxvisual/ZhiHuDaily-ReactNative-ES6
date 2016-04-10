@@ -20,7 +20,7 @@ var {
 import NavigationBar from '../components/NavigationBar';
 var LoadingPage = require('../components/LoadingPage');
 
-class WebViewScreen extends Component{
+export default class WebViewScreen extends Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -41,5 +41,3 @@ class WebViewScreen extends Component{
     );
   }
 }
-
-module.exports = WebViewScreen;

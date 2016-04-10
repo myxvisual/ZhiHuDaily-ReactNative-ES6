@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-function getStyles(WIDTH) {
+export default function getStyles(WIDTH) {
   const SCREEN_WIDTH = WIDTH;
   const styles = StyleSheet.create({
     NavigationBar: {
@@ -16,7 +16,7 @@ function getStyles(WIDTH) {
       alignItems: 'center',
       justifyContent: 'flex-end',
       height: 400,
-      width: SCREEN_WIDTH
+      margin: 0
     },
     TopstoriesFG: {
       height: 140 / 360 * SCREEN_WIDTH,
@@ -30,7 +30,7 @@ function getStyles(WIDTH) {
       lineHeight: 30,
       fontSize: 24,
       fontWeight: '300',
-      width: SCREEN_WIDTH - 24,
+      margin: 24,
       marginBottom: 12
     },
     ListView: {
@@ -38,7 +38,6 @@ function getStyles(WIDTH) {
       backgroundColor: '#FAFAFA'
     },
     ListCard: {
-      width: SCREEN_WIDTH,
       height: 82,
       flexDirection: 'row',
       justifyContent: 'flex-start',
@@ -83,5 +82,3 @@ function getStyles(WIDTH) {
   });
   return styles
 }
-
-export default getStyles

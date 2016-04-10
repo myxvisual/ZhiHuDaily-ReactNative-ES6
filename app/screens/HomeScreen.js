@@ -17,12 +17,13 @@ import DrawerView from '../components/DrawerView';
 import getStyles from '../styles/screens/HomeScreen';
 
 let SCREEN_WIDTH = Dimensions.get('window').width;
-let DRAWER_REF = {};
 let styles = getStyles(SCREEN_WIDTH);
 let listData;
 let storyDate = Date.parse(new Date());
 
 export default class HomeScreen extends Component {
+  static defaultProps = { themes: 'index'};
+  static propTypes = { themes: PropTypes.oneOfType([PropTypes.string, PropTypes.number])};
   constructor(props) {
     super(props)
     this.state = {
@@ -39,47 +40,12 @@ export default class HomeScreen extends Component {
     }
   }
 
-  coverYYMMDD(date) {
-    const nowDate = new Date(date);
-    const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
-    const nowDay = nowDate.getDate() < 10 ? `0${nowDate.getDate()}` : nowDate.getDate();
-    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDay}`;
-    return fullDate
-  }
-
-  addListData(originListData, sectionID, rowData) {
-    originListData = originListData || {dataBlob: {}, sectionsIDs: [], rowIDs: []};
-    originListData.sectionsIDs.push(sectionID);
-    originListData.dataBlob[sectionID] = rowData;
-    originListData.rowIDs.push(
-      rowData.map((element, index) => {
-        const rowID = `${sectionID}:${index}`;
-        originListData.dataBlob[rowID] = element;
-        return rowID
-      })
-    )
-    return originListData
-  }
-
   componentDidMount() {
-    this.fetchStories()
-  }
-
-  fetchStories() {
-    fetch('http://news-at.zhihu.com/api/4/news/latest')
-      .then((response) => response.json())
-      .then((responseData) => {
-        listData = this.addListData(null, responseData.date, responseData.stories);
-        this.setState({
-          topStories: this.state.topStories.cloneWithPages(responseData.top_stories),
-          stories: this.state.stories.cloneWithRowsAndSections(listData.dataBlob, listData.sectionsIDs, listData.rowIDs),
-          loading: false
-        })
-      })
-      .done()
+    this.fetchStories();
   }
 
   renderRow(rowData, sectionID, rowID) {
+    let image = rowData.images ? <Image style={styles.ListImage} source={{uri: rowData.images[0]}} /> : null;
     return (
       <TouchableOpacity
         activeOpacity={0.8}
@@ -89,35 +55,54 @@ export default class HomeScreen extends Component {
             url: rowData.id
           })} >
         <View
-          style={styles.ListCard}>
-          <Image style={styles.ListImage} source={{uri: rowData.images[0]}} />
-          <Text style={styles.ListTitle}>{rowData.title}</Text>
+          style={styles.ListCard}
+          elevation={0.6}>
+          {image}
+          <View>
+            <Text style={styles.ListTitle}>{rowData.title}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     )
   }
 
   renderSectionHeader(sectionData, sectionID) {
-    return (
-      <View style={styles.SectionHeaderBG}>
-        <Text style={styles.SectionHeaderTitle}>
-          {sectionID}
-        </Text>
-      </View>
-    )
+    if (this.props.themes === 'index') {
+      function toSectionHeader(date) {
+        const year = date.slice(0, 4);
+        const month = date.slice(4, 6) < 10 ? date.slice(5, 6) : date.slice(4, 6);
+        const day = date.slice(6, 8) < 10 ? date.slice(7, 8) : date.slice(6, 8);
+        const weekDay = new Date(+year, +month, +day).getDay();
+        const WeekString = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期天'];
+        const secitonDate = `${month}月${day}日 ${WeekString[weekDay]}`;
+        return secitonDate
+      }
+      let sectionHeaderTitle = sectionID === this.coverYYMMDD(new Date()) ? '今日新闻' : toSectionHeader(sectionID);
+      return (
+        <View style={styles.SectionHeaderBG}>
+          <Text style={styles.SectionHeaderTitle}>
+            {sectionHeaderTitle}
+          </Text>
+        </View>
+      )
+    }
+    return null
   }
 
   onEndReached() {
-    storyDate -= 86400000;
-    fetch(`http://news.at.zhihu.com/api/4/news/before/${this.coverYYMMDD(storyDate)}`)
-    .then((response) => response.json())
-    .then((responseData) => {
-      this.addListData(listData, responseData.date, responseData.stories);
-      this.setState({
-        stories: this.state.stories.cloneWithRowsAndSections(listData.dataBlob, listData.sectionsIDs, listData.rowIDs)
+    if (this.props.themes === 'index') {
+      storyDate -= 86400000;
+      fetch(`http://news.at.zhihu.com/api/4/news/before/${this.coverYYMMDD(storyDate)}`)
+      .then((response) => response.json())
+      .then((responseData) => {
+        this.addListData(responseData.date, responseData.stories, listData);
+        const { dataBlob, sectionsIDs, rowIDs } = listData;
+        this.setState({
+          stories: this.state.stories.cloneWithRowsAndSections(dataBlob, sectionsIDs, rowIDs)
+        })
       })
-    })
-    .done();
+      .done();
+    }
   }
 
   renderTopstories(topStories) {
@@ -149,18 +134,21 @@ export default class HomeScreen extends Component {
   }
 
   renderHeader() {
-    return (
-      <ViewPager
-        dataSource={this.state.topStories}
-        style={{width: SCREEN_WIDTH}}
-        renderPage={this.renderTopstories.bind(this)}
-        isLoop
-        autoPlay />
-    )
+    if (this.props.themes == 'index') {
+      return (
+        <ViewPager
+          dataSource={this.state.topStories}
+          style={{width: SCREEN_WIDTH}}
+          renderPage={this.renderTopstories.bind(this)}
+          isLoop
+          autoPlay />
+      )
+    }
+    return null
   }
 
   navigationView() {
-    return <DrawerView drawer={DRAWER_REF} />
+    return <DrawerView navigator={this.props.navigator} />
   }
 
   render() {
@@ -181,10 +169,11 @@ export default class HomeScreen extends Component {
         <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#FAFAFA'}}
               onLayout={(event) => {
                 SCREEN_WIDTH = event.nativeEvent.layout.width;
-                styles = getStyles(SCREEN_WIDTH)
+                styles = getStyles(event.nativeEvent.layout.width)
               }} >
           <View style={{paddingTop: 0}}>
             <NavigationBar
+              elevation={2}
               navigator={this.props.navigator}
               index
               openMyDrawer={() => this.refs.drawer.openDrawer()} />
@@ -194,12 +183,49 @@ export default class HomeScreen extends Component {
               dataSource={this.state.stories}
               renderRow={this.renderRow.bind(this)}
               renderHeader={this.renderHeader.bind(this)}
-              renderSectionHeader={this.renderSectionHeader}
+              renderSectionHeader={this.renderSectionHeader.bind(this)}
               onEndReachedThreshold={24}
               onEndReached={this.onEndReached.bind(this)} />
         </View>
       </DrawerLayoutAndroid>
     )
+  }
+
+  fetchStories() {
+    let uri = this.props.themes == 'index' ? 'http://news-at.zhihu.com/api/4/news/latest' : `http://news-at.zhihu.com/api/4/theme/${this.props.themes}`;
+    fetch(uri)
+      .then((response) => response.json())
+      .then((responseData) => {
+        listData = this.addListData(responseData.date, responseData.stories);
+        const { dataBlob, sectionsIDs, rowIDs } = listData;
+        this.setState({
+          topStories: this.props.themes == 'index' ? this.state.topStories.cloneWithPages(responseData.top_stories) : null,
+          stories: this.state.stories.cloneWithRowsAndSections(dataBlob, sectionsIDs, rowIDs),
+          loading: false
+        })
+      })
+      .done()
+  }
+
+  coverYYMMDD(date) {
+    const nowDate = new Date(date);
+    const nowMonth = nowDate.getMonth() < 9 ? `0${nowDate.getMonth() + 1}` : nowDate.getMonth() + 1;
+    const nowDay = nowDate.getDate() < 10 ? `0${nowDate.getDate()}` : nowDate.getDate();
+    const fullDate = `${nowDate.getFullYear()}${nowMonth}${nowDay}`;
+    return fullDate
+  }
+
+  addListData(sectionID, rowData, originListData = {dataBlob: {}, sectionsIDs: [], rowIDs: []}) {
+    originListData.sectionsIDs.push(sectionID);
+    originListData.dataBlob[sectionID] = rowData;
+    originListData.rowIDs.push(
+      rowData.map((element, index) => {
+        const rowID = `${sectionID}:${index}`;
+        originListData.dataBlob[rowID] = element;
+        return rowID
+      })
+    )
+    return originListData
   }
 }
 

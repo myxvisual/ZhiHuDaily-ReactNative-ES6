@@ -2,9 +2,10 @@ import React, {
   AppRegistry,
   Navigator,
   Dimensions,
-  Component
+  Component,
+  StatusBar,
+  View
 } from 'react-native';
-import StatusBarAndroid from 'react-native-android-statusbar';
 
 import LuanchScreen from './app/screens/LuanchScreen';
 import HomeScreen from './app/screens/HomeScreen';
@@ -13,8 +14,7 @@ import WebViewScreen from './app/screens/WebViewScreen';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-StatusBarAndroid.showStatusBar();
-StatusBarAndroid.setHexColor('#000000');
+
 const BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 const CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
   snapVelocity: 8,
@@ -30,11 +30,19 @@ const CustomSceneConfig = Object.assign({}, BaseConfig, {
 
 class APP extends Component {
   AppScene(route, navigator) {
+    let statusBar = <StatusBar backgroundColor={'hsl(0, 0%, 0%)'}
+                               translucent={false}
+                               barStyle={'light-content'} />;
     switch (route.id) {
     case 'LuanchScreen':
-      return <LuanchScreen navigator={navigator} />
+      return (
+        <View>
+          {statusBar}
+          <LuanchScreen navigator={navigator} />
+        </View>
+      )
     case 'HomeScreen':
-      return <HomeScreen navigator={navigator} />
+      return <HomeScreen navigator={navigator} themes={route.themes} />
     case 'StoryScreen':
       return <StoryScreen navigator={navigator} url={route.url} />
     case 'WebViewScreen':
@@ -44,7 +52,7 @@ class APP extends Component {
     }
   }
 
-  _configureScene(route) {
+  configureScene() {
     return CustomSceneConfig;
   }
 
@@ -53,7 +61,7 @@ class APP extends Component {
       <Navigator
           initialRoute={{id: 'LuanchScreen'}}
           renderScene={this.AppScene}
-          configureScene={(route) => this._configureScene(route)} />
+          configureScene={() => Navigator.SceneConfigs.FadeAndroid} />
     );
   }
 }

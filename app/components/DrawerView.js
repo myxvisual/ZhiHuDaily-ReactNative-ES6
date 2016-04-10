@@ -40,7 +40,11 @@ export default class DrawerView extends Component {
             <Text style={{marginLeft:20,color:'#B3B3B3',fontSize:28,fontFamily:'MaterialIcons-Regular',}}>inbox</Text>
             <Text style={{marginLeft:20,color:'#B3B3B3',fontSize:14,}}>离线下载</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{flexDirection:'row',height:40,alignItems:'center',borderBottomWidth:1,borderColor:'#F2F2F2',}}>
+          <TouchableOpacity style={{flexDirection:'row',height:40,alignItems:'center',borderBottomWidth:1,borderColor:'#F2F2F2',}}
+                            onPress={() => this.props.navigator.replace({
+                              id: 'HomeScreen',
+                              themes: 'index'}
+                            )} >
             <Text style={{marginLeft:20,color:'#00AAFF',fontSize:28,fontFamily:'MaterialIcons-Regular',}}>home</Text>
             <Text style={{marginLeft:20,color:'#00AAFF',fontSize:14,}}>首页</Text>
           </TouchableOpacity>
@@ -48,7 +52,7 @@ export default class DrawerView extends Component {
             <Text style={{marginLeft:20,color:'#D1D1D1',fontSize:16,}}>主题日报</Text>
           </View>
         </View>
-        <ThemeList onselectTheme={null} />
+        <ThemeList navigator={this.props.navigator} />
       </View>
     );
   }

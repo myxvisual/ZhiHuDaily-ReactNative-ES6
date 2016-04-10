@@ -26,40 +26,41 @@ class ThemeList extends Component {
     }
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.fetchThemse();
   }
 
-  fetchThemse(){
+  fetchThemse() {
     fetch(THEMSE_URL)
       .then((response) => response.json())
       .then((responseData) => {
         this.setState({
-          dataSource:this.state.dataSource.cloneWithRows(responseData.others),
+          dataSource: this.state.dataSource.cloneWithRows(responseData.others)
         })
       })
       .done();
   }
 
-  render(){
+  render() {
     return (
       <View>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this._renderRow.bind(this)}
-          showsVerticalScrollIndicator={true}
-          style={{height:300}} />
+          renderRow={this.renderRow.bind(this)}
+          showsVerticalScrollIndicator={true} />
         <Text>{this.state.dataSource.name}</Text>
       </View>
     );
   }
 
-  _renderRow(themes){
-    return(
+  renderRow(themes) {
+    return (
       <TouchableOpacity
-        activeOpacity={.4}
-        //onPress={}
-         >
+        activeOpacity={0.4}
+        onPress={() => this.props.navigator.replace({
+          id: 'HomeScreen',
+          themes: themes.id}
+        )} >
         <View style={{marginLeft:20,flexDirection:'row',alignItems:'center',}}>
           <Text style={{fontFamily:'MaterialIcons-Regular',fontSize:27,color:'#B3B3B3',}}>
             add
