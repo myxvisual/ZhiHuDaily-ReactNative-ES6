@@ -1,6 +1,6 @@
 {
   Rollup.js,
-  HTTP/2,
+  HTTP2,
   Servers,
   CodePush,
   webpackHrm,
